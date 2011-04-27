@@ -175,9 +175,6 @@ use_ok( 'FiniteStateMachine', 'Use ok' );
         is( scalar @result, 0, 'no other results from adhoc' );
         is( scalar @triggers, 0, 'no triggers from adhoc' );
                        
-        # invalid reg / val tests
-        #dthrows( $fsm->set( 'bad_register' ), 's' );
-        
         # Rebuild test
         $fsm->build( {
             adhoc2 => {
@@ -195,6 +192,11 @@ use_ok( 'FiniteStateMachine', 'Use ok' );
         
         is( pop @triggers, 'adhoc2', 'trigger after rebuild' );
         is( scalar @triggers, 0, 'no other triggers' );
+        
+        # invalid reg / val tests
+        #dthrows( $fsm->set( 'bad_register' ), 's' );
+        
+
     }
 }
 
