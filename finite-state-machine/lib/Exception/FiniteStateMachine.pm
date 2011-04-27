@@ -29,11 +29,14 @@ use Exception::Class (
 
 sub FiniteStateMachine::Error::full_message {
     my $self = shift;
-    my $message = $self->message ? $self->message : $self->description;
-    my @fields = map { defined $self->$_ ? ($_ . ': ' . $self->$_) : () } $self->Fields;
-    if (@fields) {
+## TODO: uncomment when base error is used, or other errors are added
+#    my $message = $self->message ? $self->message : $self->description;
+    my $message = $self->message;
+#    my @fields = map { defined $self->$_ ? ($_ . ': ' . $self->$_) : () } $self->Fields;
+    my @fields = map { $_ . ': ' . $self->$_ } $self->Fields;
+#    if (@fields) {
         $message .= ' (' . join( q{, }, @fields ) . ')';
-    }
+#    }
     return $message;
 }
 
