@@ -22,7 +22,7 @@ use FiniteStateMachine;
 
 #----------------------------------------------------------------------------
 # Init
-my $session = { session => undef }; #WebGUI::Test->session;
+#my $session = { session => undef }; #WebGUI::Test->session;
 my $class = 'FiniteStateMachine';
 #my @entries;
 
@@ -87,7 +87,7 @@ use_ok( 'FiniteStateMachine', 'Use ok' );
         
     };
     
-    my $fsm = FiniteStateMachine->new( $session, $states, $registers, $transitions );
+    my $fsm = FiniteStateMachine->new( $states, $registers, $transitions );
     
     my $_all_ajar = { door => 'ajar', window => 'ajar' };
     my $_door_ajar = { door => 'ajar' };

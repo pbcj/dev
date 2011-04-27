@@ -41,7 +41,7 @@ sub dev {
         #CORE::push @triggers, shift;
     };
     
-    my $fsm = FiniteStateMachine->new( { this => "session" } );
+    my $fsm = FiniteStateMachine->new( );  # { this => "session" }
     
     $fsm->{ _states } = {
         'door_state' => [ 'opened', 'closed', 'ajar' ],

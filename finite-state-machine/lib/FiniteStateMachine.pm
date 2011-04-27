@@ -37,9 +37,10 @@ This package provides a Finite State Machine with stack functionality.
 
 =head1 SYNOPSIS
 
- [code snips here]
  use WebGUI::FiniteStateMachine;
- $fsm = WebGUI::FiniteStateMachine->new($session,3);
+ $fsm = WebGUI::FiniteStateMachine->new( ... );
+ $fsm->build( { ... } );
+ $fsm->set( { register => 'valid state' } );
  
 =head1 VARIABLES
 
@@ -89,7 +90,7 @@ This package provides a Finite State Machine with stack functionality.
 
 These methods are available from this class:
 
-    new     ( session, states, registers, [transitions] )
+    new     ( states, registers, [transitions] )
     build   ( transitions )
     pop     ( [doNotInvokeTransition] )
     push    ( state, [doNotInvokeTransition] )
@@ -135,7 +136,7 @@ name.  It may, however, be included within a state definition.
 =cut
 #-------------------------------------------------------------------
 
-=head2 new ( session, states, registers, [transitions] )
+=head2 new ( states, registers, [transitions] )
 
 Returns a new state machine.
 
@@ -153,11 +154,10 @@ A nested hash reference defining the transition logic and functionality.
 
 =cut
 sub new {
-    my ( $class, $session, $states, $registers, $transitions ) = @_;
+    my ( $class, $states, $registers, $transitions ) = @_;
     
     # Declare instance object
     my $instance = bless {
-        _session => $session,
         _states => $states || {},
         _registers => $registers || {},
         _transitions => $transitions || {},
@@ -168,9 +168,6 @@ sub new {
         _fromTransitions => {},
         _toTransitions => {},
     }, $class;
-    
-    # Don't hold onto the session.
-    weaken $instance->{ _session };
     
     # If transitions were passed, set them up
     $instance->build if $transitions;
@@ -233,6 +230,10 @@ sub build {
 #-------------------------------------------------------------------
 
 =head2 evaluate ( transitionRegisters )
+
+Evaluates the transition register structure.
+
+Returns an array matched transition conditions by key.
 
 =head3 transitionRegisters
 
@@ -329,7 +330,7 @@ sub pop {
 
 #-------------------------------------------------------------------
 
-=head2 set ( state )
+=head2 set ( state, [doNotInvokeTransition] )
 
 Changes the current state, optionally (by default) invoking transitions.
 
