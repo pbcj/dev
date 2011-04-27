@@ -294,6 +294,10 @@ Returns the pushed state.
 
 A hash reference containing the changed states. { register => state, ... }
 
+=head3 doNotInvokeTransition
+
+Pass a value which evaluates to true to prevent transition trigger invocation.
+
 =cut
 sub push {
     my ( $this, $state, $doNotInvokeTransition ) = @_;
@@ -313,6 +317,10 @@ sub push {
 =head2 pop ( [doNotInvokeTransition] )
 
 Returns a the popped state, optionally (by default) invoking transitions.
+
+=head3 doNotInvokeTransition
+
+Pass a value which evaluates to true to prevent transition trigger invocation.
 
 =cut
 sub pop {
@@ -342,6 +350,10 @@ Throws FiniteStateMachine::Error::Undefined( register, state ) if the value bein
 =head3 state
 
 A hash reference containing the changed states. { register => state, ... }
+
+=head3 doNotInvokeTransition
+
+Pass a value which evaluates to true to prevent transition trigger invocation.
 
 =cut
 sub set {
@@ -385,13 +397,9 @@ sub state {
 =cut
 #-------------------------------------------------------------------
 
-=head2 _evaluateLogic ( state )
+=head2 _evaluateLogic ( counters, registerKey, operation, transitions )
 
-Evaluates a group of transitions for a particular register key.
-
-=head3 state
-
-A hash reference containing the changed states. { register => state }
+Evaluates a group of transitions for a particular register key given an operation (IS or ISNT).
 
 =cut
 {   my $eq = sub { ( shift eq shift ) ? 1 : 0 };
@@ -443,6 +451,10 @@ Validates and sets state, optionally (by default) invoking transitions.
 
 A hash reference containing the changed states. { register => state }
 
+=head3 doNotInvokeTransition
+
+Pass a value which evaluates to true to prevent transition trigger invocation.
+
 =cut
 sub _transition {
     my ( $this, $state, $doNotInvokeTransitions ) = @_;
@@ -472,6 +484,18 @@ sub _transition {
 
 Translates a transition definition entry into the super structures used
 to efficiently detect state changes.
+
+=head3 name
+
+The name of the transition to translating.
+
+=head3 definition
+
+The name of the transition definition (at FROM or TO branch).
+
+=head3 table
+
+The state table which should receive the translated definition.
 
 =cut
 sub _translate {
@@ -519,16 +543,24 @@ sub _translate {
 
 #-------------------------------------------------------------------
 
-=head2 _validateState ( registerType, $state )
+=head2 _validateState ( registerType, finiteState )
 
 Validates a state as being acceptable for a given register type.
 
+=head3 registerType
+
+The name of the register for which the passed finite state must valid.
+
+=head3 finiteState
+
+The value to be validated against the register type.
+
 =cut
 sub _validateState {
-    my ( $this, $registerType, $state ) = @_;
+    my ( $this, $registerType, $finiteState ) = @_;
 
     # Ensure state is valid for this register type
-    return any { $_ eq $state } @{ $this->{ _states }->{ $registerType } };
+    return any { $_ eq $finiteState } @{ $this->{ _states }->{ $registerType } };
 }
 
 #-------------------------------------------------------------------
