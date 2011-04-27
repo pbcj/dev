@@ -144,7 +144,6 @@ sub dev {
         }
     } );
     print '[', ( join q/ | / => keys %{ $activeTransitions } ), ']';
-    print '{', $fsm->{ door } || "-", "}";
     
     #print join q/ -- / => @$fsm;
     

@@ -26,12 +26,6 @@ use Data::Dumper;
 use lib '/data/WebGUI/lib';
 
 use Exception::FiniteStateMachine;
-use overload
-    '0+' => \&toScalar,
-    '""' => \&toScalar,
-#    '@{}' => \&toArray,
-#    '%{}' => \&toHash,
-    ;
 
 =head1 NAME
 
@@ -162,7 +156,7 @@ sub new {
     my ( $class, $session, $states, $registers, $transitions ) = @_;
     
     # Declare instance object
-    my $instance = bless publicize( state => {
+    my $instance = bless {
         _session => $session,
         _states => $states || {},
         _registers => $registers || {},
@@ -173,7 +167,7 @@ sub new {
         _toState => {},
         _fromTransitions => {},
         _toTransitions => {},
-    } ), $class;
+    }, $class;
     
     # Don't hold onto the session.
     weaken $instance->{ _session };
@@ -183,31 +177,6 @@ sub new {
     
     # Return new instance
     return $instance;
-}
-#__PACKAGE__->new();
-sub publicize { \%{ exposedHash->new(@_) } }
-{
-    package exposedHash;
-    
-    use overload "%{}" => \&accessor;
-    
-    our $_hash;
-    our $_publicMember;
-    
-    sub new {
-        my ( $class, $publicMember, $hash ) = @_;
-        
-        $_publicMember = $publicMember;
-        $_hash = $hash;
-    }
-    
-    sub accessor {
-        my ( $self, $key ) = @_;
-        
-        #return $_hash->{ $key } if( $key =~ m/^_(.*)/ );
-        
-        return $_hash->{ "_$_publicMember" };
-    }
 }
 
 ####################################################################
@@ -233,8 +202,14 @@ sub build {
     $this->{ _transitions } = $transitions unless !$transitions;
     
     # Shortcuts
-    my $fromStates = $this->{ _fromState };
-    my $toStates = $this->{ _toState };
+    my $fromStates = $this->{ _fromState } = {};
+    my $toStates = $this->{ _toState } = {};
+    
+    # Reset
+    $this->{ _stack } = [];
+    $this->{ _state } = {};
+    $this->{ _fromTransitions } = {};
+    $this->{ _toTransitions } = {};
     
     # For each transition
     while( my ( $name, $transition ) = each( %{ $this->{ _transitions } } ) ) {
@@ -594,47 +569,4 @@ sub _validateStates {
     return $this;    
 }
 
-####################################################################
-
-=head1 OVERLOADS
-=cut
-#-------------------------------------------------------------------
-
-=head2 toScalar 
-
-Returns a the count of fromTransitions.
-
-=cut
-sub toScalar { scalar shift->_toArray; }
-
-#-------------------------------------------------------------------
-
-=head2 toArray
-
-Returns the FROM transitions as an array.
-
-=cut
-sub toArray {
-    my $this = shift;
-    my @array = keys %{ $this->{ _fromTransitions } };
-    return \@array;
-}
-
-#-------------------------------------------------------------------
-
-=head2 toHash
-
-Returns a hash containing the match FROM transitions and TO transitions.
-
-=cut
-sub toHash {
-    my $this = shift;
-    my %hash = {
-         to => keys %{ $this->{ _toTransitions } },
-         from => keys %{ $this->{ _fromTransitions } },
-    };
-    return \%hash;
-}
-
 1;
-

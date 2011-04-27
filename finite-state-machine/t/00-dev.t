@@ -146,24 +146,55 @@ use_ok( 'FiniteStateMachine', 'Use ok' );
         
         $fsm->push( $_all_ajar, 1 );
         $fsm->pop( 1 );
-        is( scalar @triggers, 0, 'no other triggers from pop 1/2' );
+        is( scalar @triggers, 0, 'no other triggers from pop 1/3' );
         
         $fsm->push( $_all_ajar, 1 );
         $fsm->pop();
         
         is( pop @triggers, 'door closed', 'trigger from pop: door closed' );
         is( pop @triggers, 'all closed', 'trigger from pop: all closed' );
-        is( scalar @triggers, 0, 'no other triggers from pop 2/2' );
+        is( scalar @triggers, 0, 'no other triggers from pop 2/3' );
         
-        #is( ( join q/ -- / => @{ $fsm } ), 'all closed -- door closed', 'array overload for current matches FROM transitions' );
-        #is( ( join q/ -- / => keys %{ $fsm->{ to } } ), 'door opened to closed -- all closed -- door initialized -- door closed', 'array overload for current matches FROM transitions' );
-        #is( ( join q/ -- / => keys %{ $fsm->{ from } } ), 'door opened to closed -- all closed -- door initialized -- door closed', 'array overload for current matches FROM transitions' );
+        
+        $fsm->pop();
+        $fsm->pop();
+        is( pop @triggers, 'door closed', 'trigger from repop: door closed' );
+        is( pop @triggers, 'all closed', 'trigger from repop: all closed' );
+        is( scalar @triggers, 0, 'no other triggers from pop 3/3' );
+        
+        #pop through test => adoc { closed }
+        my @result = keys %{ $fsm->evaluate( {
+            door => {
+                is => {
+                    'closed' => [ 'adhoc door is so closed' ],
+                },
+            }
+        } ) };
+        
+        is( pop @result, 'adhoc door is so closed', 'ahdoc trigger' );
+        is( scalar @result, 0, 'no other results from adhoc' );
+        is( scalar @triggers, 0, 'no triggers from adhoc' );
+                       
         # invalid reg / val tests
         #dthrows( $fsm->set( 'bad_register' ), 's' );
         
-        #pop through test => adoc { closed }
+        # Rebuild test
+        $fsm->build( {
+            adhoc2 => {
+                from => {
+                    '!door' => 'closed'
+                },
+                to => {
+                    door => 'closed'
+                },
+                trigger => $trigger
+            }
+        } );
+        $fsm->set( { door => 'opened' } );
+        $fsm->set( { door => 'closed' } );
         
-
+        is( pop @triggers, 'adhoc2', 'trigger after rebuild' );
+        is( scalar @triggers, 0, 'no other triggers' );
     }
 }
 
