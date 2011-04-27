@@ -89,12 +89,13 @@ This package provides a Finite State Machine with stack functionality.
 
 These methods are available from this class:
 
-    new     ( states, registers, [transitions] )
-    build   ( transitions )
-    pop     ( [doNotInvokeTransition] )
-    push    ( state, [doNotInvokeTransition] )
-    set     ( state )
-    state   ( [register ] )
+    new         ( states, registers, [transitions] )
+    build       ( transitions )
+    evaluate    ( transitionRegister )
+    pop         ( [doNotInvokeTransition] )
+    push        ( state, [doNotInvokeTransition] )
+    set         ( state )
+    state       ( [register ] )
 
 =head1 DEVELOPER NOTES
 
@@ -111,8 +112,7 @@ evaluation is used on the current state in the context of FROM or TO, and this
 produces a list of corresponding matched transition states.  A transition is
 detected when a transition state is active during both the FROM and TO, and the
 corresponding trigger is fired.  The order which the matched transition triggers
-are fired is unspecified, so if an order is desired, the transition definition hash
-should be tied accordingly prior to instantiating this class.
+are fired is unspecified.
 
 State transition evaluation works by matching IS and ISNT conditions from the
 transition definition against the state's previous value (matched or unmatched).
@@ -479,7 +479,7 @@ sub _transition {
 
 #-------------------------------------------------------------------
 
-=head2 _translate ( $name, $definition, $table )
+=head2 _translate ( name, definition, table )
 
 Translates a transition definition entry into the super structures used
 to efficiently detect state changes.
