@@ -146,7 +146,8 @@ sub dev {
     print '[', ( join q/ | / => keys %{ $activeTransitions } ), ']';
     
     #print join q/ -- / => @$fsm;
-    
+    eval { $fsm->set( { 'bad_register', 1 } ) };
+    print 'why: ' . $@;
 };
 
 dev;

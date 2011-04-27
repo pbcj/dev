@@ -1,5 +1,6 @@
 use ExtUtils::MakeMaker;
 use ExtUtils::MakeMaker::Coverage;
+use Devel::Cover;
 
     WriteMakefile(
         NAME            => 'FiniteStateMachine',

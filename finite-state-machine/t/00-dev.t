@@ -17,7 +17,7 @@ use lib '../lib';
 #use Test::Most 'defer_plan';
 use Test::More;
 use Test::Deep;
-
+use Test::Exception;
 use FiniteStateMachine;
 
 #----------------------------------------------------------------------------
@@ -195,8 +195,10 @@ use_ok( 'FiniteStateMachine', 'Use ok' );
         
         # invalid reg / val tests
         #dthrows( $fsm->set( 'bad_register' ), 's' );
-        
-
+        throws_ok { $fsm->set( { 'bad_register', 1 } ) } "FiniteStateMachine::Error::Undefined", 'bad register thrown';
+        like $@, qr/register: bad_register/, 'message is adequate';
+        throws_ok { $fsm->set( { 'door', 'bad value' } ) } "FiniteStateMachine::Error::Undefined", 'bad value thrown';
+        like $@, qr/state: bad value/, 'message is adequate';
     }
 }
 
