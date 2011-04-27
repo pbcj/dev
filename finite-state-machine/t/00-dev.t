@@ -199,6 +199,13 @@ use_ok( 'FiniteStateMachine', 'Use ok' );
         like $@, qr/register: bad_register/, 'message is adequate';
         throws_ok { $fsm->set( { 'door', 'bad value' } ) } "FiniteStateMachine::Error::Undefined", 'bad value thrown';
         like $@, qr/state: bad value/, 'message is adequate';
+        
+        # new without transitions
+        new_ok( FiniteStateMachine => [ $states, $registers ] );
+        new_ok( FiniteStateMachine => [ ] );
+        
+        is_deeply( $fsm->state, { door => 'closed' }, 'State inspection 1/2' );
+        is( $fsm->state( 'door' ), 'closed', 'State inspection 2/2' );
     }
 }
 

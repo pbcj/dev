@@ -23,8 +23,6 @@ use List::Util qw( reduce );
 use List::MoreUtils qw( any );
 use Data::Dumper;
 
-use lib '/data/WebGUI/lib';
-
 use Exception::FiniteStateMachine;
 
 =head1 NAME
@@ -61,6 +59,7 @@ This package provides a Finite State Machine with stack functionality.
         { 'door opened' => {
             from => { !door => [ 'open', 'ajar' ] },    # list allowed, treated as OR during transition
             to =>   { door => 'open'},
+            trigger => sub { my ( $fsm, $transitionKey ) = @_; ... }
             },
           ...
         }
