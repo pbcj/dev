@@ -67,23 +67,22 @@ This package provides a Finite State Machine with stack functionality.
 =head1 STRUCTURES
     
     transitionRegister              the structure of fromState and toState (fromState shown)
-        { "door" =>
-            # snipped "fromState"
-            'isnt' => {
-                { 'open' => [ 'door opened', ... ],
-                  'ajar' => [ 'door opened', ... ],
-              	  ...
+        {   'door' => {
+                # snipped "fromState"
+                'isnt' => {
+                    'open' => [ 'door opened', ... ],
+                    'ajar' => [ 'door opened', ... ],
+                  	  ...
                 },
-            },
-            # snipped "toState"
-            'is' => {
-            	{ 'open' => [ 'door opened', ... ],
-             	...
+                # snipped "toState"
+                'is' => {
+                	'open' => [ 'door opened', ... ],
+                 	...
                 },
             },
            ...
-        )
-
+        }
+        
 
 =head1 METHOD PROTOTYPES
 
@@ -220,7 +219,7 @@ sub build {
         
     }
     
-    #print Dumper( $fromStates );
+    print Dumper( $fromStates );
     #print Dumper( $toStates );
     #print Dumper( $this->{ _counts } );
     
@@ -522,6 +521,9 @@ sub _translate {
         $table->{ $registerKey }->{ $slotName } = {} if !$table->{ $registerKey }->{ $slotName };
         my $slot = $table->{ $registerKey }->{ $slotName };
         
+        # Initialize count register
+        $counters->{ $name }->{ "!" } = 0;
+        
         # For each state
         for my $state ( @{ $states } ) {
             
@@ -533,7 +535,6 @@ sub _translate {
             
             # Create a place to keep counts for this state
             $counters->{ $name }->{ "$registerKey $slotName $state" } = 0;
-            $counters->{ $name }->{ "!" } = 0;
         }
         
     } keys %{ $definition };
